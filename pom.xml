@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dev.taljaard</groupId>
+  <artifactId>parent-pom</artifactId>
+  <version>0.0.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <url>https://github.com/mathysjtaljaard/dev.taljaard.parent-pom</url>
+
+  <scm>
+    <connection>scm:git:https://github.com/mathysjtaljaard/dev.taljaard.parent-pom</connection>
+    <developerConnection>scm:git:https://github.com/mathysjtaljaard/dev.taljaard.parent-pom</developerConnection>
+    <url>https://github.com/mathysjtaljaard/dev.taljaard.parent-pom</url>
+    <tag>master</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>mathysjtaljaard</id>
+      <name>Mathys J Taljaard</name>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License</name>
+      <url>https://www.apache.org/licenses/</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+
+    <spotless.version>2.27.2</spotless.version>
+    <google.java.format.version>1.8</google.java.format.version>
+    <githook.maven.plugin.version>1.0.5</githook.maven.plugin.version>
+    <maven.release.plugin.version>3.0.0-M6</maven.release.plugin.version>
+    <spotless.default.file.header.content><![CDATA[/* (C)$YEAR */]]></spotless.default.file.header.content>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>${maven.release.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless.version}</version>
+        <configuration>
+          <java>
+            <googleJavaFormat>
+              <version>${google.java.format.version}</version>
+            </googleJavaFormat>
+            <licenseHeader>
+              <content>${spotless.default.file.header.content}</content>
+            </licenseHeader>
+          </java>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>io.github.phillipuniverse</groupId>
+        <artifactId>githook-maven-plugin</artifactId>
+        <version>${githook.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>install</goal>
+            </goals>
+            <configuration>
+              <hooks>
+                <pre-commit>
+                  #!/bin/bash
+
+                  echo 'Running Spotless Check and Apply'
+                  mvn spotless:apply
+
+                  mvn test
+                  exit $RESULT
+
+                </pre-commit>
+              </hooks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
