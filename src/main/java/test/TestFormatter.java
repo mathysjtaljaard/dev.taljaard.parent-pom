@@ -6,6 +6,6 @@ public class TestFormatter {
   public static void main() {
     String value = "somethings wonky";
 
-    System.out.println(value);
+    String somethingElse = "more things to update";
   }
 }

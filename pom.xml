@@ -76,13 +76,23 @@
               <hooks>
                 <pre-commit>
                   #!/bin/bash
-
-                  echo 'Running Spotless Check and Apply'
-                  mvn spotless:apply
-
+                  set -e
+                  # Run Tests
+                  echo '[Running Tests] before commit'
                   mvn test
-                  exit $RESULT
 
+                  echo '[Running Spotless formatter]'
+                  mvn spotless:check || RESULT=$?
+                  echo "spotless check returned status $RESULT"
+
+                  if [ "$RESULT" = "1" ]; then
+                    mvn spotless:apply || RESULT=$?
+                    echo "Spotless applied changes, please commit formatted changes by running command:"
+                    echo "git commit -a --amend --no-edit"
+                    exit 1
+                  fi
+
+                  exit 0
                 </pre-commit>
               </hooks>
             </configuration>
